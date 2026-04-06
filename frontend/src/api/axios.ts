@@ -16,14 +16,14 @@ export function clearStoredToken(): void {
   localStorage.removeItem(TOKEN_STORAGE_KEY);
 }
 
-export const http = axios.create({
+export const api = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-http.interceptors.request.use((config) => {
+api.interceptors.request.use((config) => {
   const token = getStoredToken();
 
   if (token) {

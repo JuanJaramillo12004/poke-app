@@ -154,6 +154,15 @@ export class PokemonService {
     return (await response.json()) as PokemonListResponse;
   }
 
+  private async getPokemonCatalogTotal(): Promise<number> {
+    try {
+      const list = await this.fetchPokemonList(0, 1);
+      return Number(list.count ?? 0);
+    } catch {
+      return this.countPokemonCache();
+    }
+  }
+
   private async upsertPokemonCache(pokemon: PokemonResponse) {
     const mapped = this.mapToCachedPokemon(pokemon);
 
@@ -314,10 +323,13 @@ export class PokemonService {
       };
     }
 
-    const [data, total] = await Promise.all([
+    const [data, cacheTotal, catalogTotal] = await Promise.all([
       this.listPokemonCache(skip, limit),
       this.countPokemonCache(),
+      this.getPokemonCatalogTotal(),
     ]);
+
+    const total = Math.max(cacheTotal, catalogTotal);
 
     return {
       data,
