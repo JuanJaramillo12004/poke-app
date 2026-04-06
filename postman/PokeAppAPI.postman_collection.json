@@ -1,0 +1,445 @@
+{
+  "info": {
+    "_postman_id": "a8d78b86-00ab-4e65-a49a-1cf0eb4717c3",
+    "name": "Poke App API",
+    "description": "Collection for auth, Pokemon catalog, and favorite Pokemon CRUD endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53769995",
+    "_collection_link": "https://go.postman.co/collection/53769995-a8d78b86-00ab-4e65-a49a-1cf0eb4717c3?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Creates a new user."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "let data = {};",
+                  "try {",
+                  "  data = pm.response.json();",
+                  "} catch (e) {",
+                  "  data = {};",
+                  "}",
+                  "",
+                  "if (data.access_token) {",
+                  "  pm.environment.set('token', data.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates a user and returns a JWT token."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pokemon Catalog",
+      "item": [
+        {
+          "name": "List Catalog",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoidXNlckB0ZXN0LmNvbSIsImlhdCI6MTc3NTQ1MTAwMiwiZXhwIjoxNzc1NDU0NjAyfQ.hgFkcxGYhJB53BOCGdUdw7kNb4-Q1HjuE4XcxrKsocw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pokemon/catalog?page={{page}}&limit={{limit}}&search={{search}}&type={{type}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pokemon",
+                "catalog"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}"
+                },
+                {
+                  "key": "search",
+                  "value": "{{search}}"
+                },
+                {
+                  "key": "type",
+                  "value": "{{type}}"
+                }
+              ]
+            },
+            "description": "Returns paginated Pokemon catalog (cached + PokeAPI)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Favorite Pokemon",
+      "item": [
+        {
+          "name": "List Favorites",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoidXNlckB0ZXN0LmNvbSIsImlhdCI6MTc3NTQ1MTAwMiwiZXhwIjoxNzc1NDU0NjAyfQ.hgFkcxGYhJB53BOCGdUdw7kNb4-Q1HjuE4XcxrKsocw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pokemon?page={{page}}&limit={{limit}}&search={{search}}&type={{type}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pokemon"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}"
+                },
+                {
+                  "key": "search",
+                  "value": "{{search}}"
+                },
+                {
+                  "key": "type",
+                  "value": "{{type}}"
+                }
+              ]
+            },
+            "description": "Returns authenticated user's favorite Pokemon list."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Favorite",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let data = {};",
+                  "try {",
+                  "  data = pm.response.json();",
+                  "} catch (e) {",
+                  "  data = {};",
+                  "}",
+                  "",
+                  "if (data.id) {",
+                  "  pm.environment.set('favoriteId', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoidXNlckB0ZXN0LmNvbSIsImlhdCI6MTc3NTQ1MTAwMiwiZXhwIjoxNzc1NDU0NjAyfQ.hgFkcxGYhJB53BOCGdUdw7kNb4-Q1HjuE4XcxrKsocw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{pokemonName}}\",\n  \"comments\": \"{{comments}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pokemon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pokemon"
+              ]
+            },
+            "description": "Creates a favorite Pokemon for the authenticated user."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Favorite By Id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoidXNlckB0ZXN0LmNvbSIsImlhdCI6MTc3NTQ1MTAwMiwiZXhwIjoxNzc1NDU0NjAyfQ.hgFkcxGYhJB53BOCGdUdw7kNb4-Q1HjuE4XcxrKsocw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pokemon/{{favoriteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pokemon",
+                "{{favoriteId}}"
+              ]
+            },
+            "description": "Returns details of one favorite Pokemon by ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Favorite",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoidXNlckB0ZXN0LmNvbSIsImlhdCI6MTc3NTQ1MTAwMiwiZXhwIjoxNzc1NDU0NjAyfQ.hgFkcxGYhJB53BOCGdUdw7kNb4-Q1HjuE4XcxrKsocw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comments\": \"Pokemon actualizado desde la petición Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pokemon/{{favoriteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pokemon",
+                "{{favoriteId}}"
+              ]
+            },
+            "description": "Updates comments of one favorite Pokemon."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Favorite",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoidXNlckB0ZXN0LmNvbSIsImlhdCI6MTc3NTQ1MTAwMiwiZXhwIjoxNzc1NDU0NjAyfQ.hgFkcxGYhJB53BOCGdUdw7kNb4-Q1HjuE4XcxrKsocw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pokemon/{{favoriteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pokemon",
+                "{{favoriteId}}"
+              ]
+            },
+            "description": "Deletes one favorite Pokemon by ID."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "email",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "page",
+      "value": ""
+    },
+    {
+      "key": "limit",
+      "value": ""
+    },
+    {
+      "key": "search",
+      "value": ""
+    },
+    {
+      "key": "type",
+      "value": ""
+    },
+    {
+      "key": "pokemonName",
+      "value": ""
+    },
+    {
+      "key": "comments",
+      "value": ""
+    },
+    {
+      "key": "favoriteId",
+      "value": ""
+    }
+  ]
+}

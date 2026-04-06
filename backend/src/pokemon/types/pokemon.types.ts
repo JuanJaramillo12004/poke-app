@@ -36,6 +36,11 @@ export type PokemonListResponse = {
   results: Array<{ name: string }>;
 };
 
+// API response shape used by consumers of Pokemon type endpoint.
+export type PokemonTypeResponse = {
+  pokemon: Array<{ pokemon: { name: string } }>;
+};
+
 // Type alias: PokemonCacheRow.
 export type PokemonCacheRow = {
   pokemonId: number;

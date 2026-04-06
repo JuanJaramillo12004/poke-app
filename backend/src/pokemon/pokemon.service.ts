@@ -16,6 +16,7 @@ import {
   PokemonBaseStats,
   PokemonCacheRow,
   PokemonListResponse,
+  PokemonTypeResponse,
   PokemonResponse,
 } from './types/pokemon.types';
 
@@ -167,15 +168,53 @@ export class PokemonService {
     return (await response.json()) as PokemonListResponse;
   }
 
-  // Helper method to get the total count of Pokemon in the external PokeAPI, with a fallback to counting cached Pokemon if the API request fails, ensuring that pagination metadata can be provided even if the external API is unavailable.
-  private async getPokemonCatalogTotal(): Promise<number> {
-    // Translate failures into explicit domain or HTTP errors.
-    try {
-      const list = await this.fetchPokemonList(0, 1);
-      return Number(list.count ?? 0);
-    } catch {
-      return this.countPokemonCache();
+  // Helper method to fetch all Pokemon names for a specific type from the external PokeAPI.
+  private async fetchPokemonNamesByType(type: string): Promise<string[]> {
+    const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new NotFoundException(`Tipo de Pokemon "${type}" no encontrado`);
+      }
+
+      throw new InternalServerErrorException(
+        'No fue posible consultar la PokeAPI',
+      );
     }
+
+    const raw = (await response.json()) as PokemonTypeResponse;
+
+    if (!Array.isArray(raw.pokemon)) {
+      return [];
+    }
+
+    return raw.pokemon
+      .map((entry) => entry?.pokemon?.name)
+      .filter((name): name is string => typeof name === 'string');
+  }
+
+  // Helper method to fetch all Pokemon names from the external PokeAPI without writing to local cache.
+  private async fetchAllPokemonNames(): Promise<string[]> {
+    const firstPage = await this.fetchPokemonList(0, 1);
+    const total = Number(firstPage.count ?? 0);
+
+    if (!total) {
+      return [];
+    }
+
+    const fullList = await this.fetchPokemonList(0, total);
+    return fullList.results.map((item) => item.name);
+  }
+
+  // Helper method to resolve full Pokemon details for the provided names without persisting them in local cache.
+  private async fetchCatalogEntriesByNames(
+    names: string[],
+  ): Promise<CachedPokemon[]> {
+    const details = await Promise.all(
+      names.map((name) => this.fetchPokemonData(name)),
+    );
+
+    return details.map((pokemon) => this.mapToCachedPokemon(pokemon));
   }
 
   // Helper method to upsert Pokemon data into the cache, inserting a new record or updating an existing one based on the pokemonId, and returning the mapped CachedPokemon domain model.
@@ -240,31 +279,6 @@ export class PokemonService {
     return this.upsertPokemonCache(pokemon);
   }
 
-  // Helper method to ensure the cache is populated with enough Pokemon data to satisfy pagination requests, fetching and caching Pokemon in batches until the required count is reached or the external API indicates there are no more Pokemon.
-  private async hydrateCacheUntil(requiredCount: number) {
-    let currentCount = await this.countPokemonCache();
-
-    while (currentCount < requiredCount) {
-      const batchLimit = Math.min(20, requiredCount - currentCount);
-      const list = await this.fetchPokemonList(currentCount, batchLimit);
-
-      if (!list.results.length) {
-        break;
-      }
-
-      for (const item of list.results) {
-        const pokemon = await this.fetchPokemonData(item.name);
-        await this.upsertPokemonCache(pokemon);
-      }
-
-      currentCount = await this.countPokemonCache();
-
-      if (currentCount >= list.count) {
-        break;
-      }
-    }
-  }
-
   // Helper method to map the stats array from the PokeAPI response to a PokemonBaseStats object, extracting the base stat values and organizing them by stat name.
   private mapBaseStats(stats: PokemonResponse['stats']): PokemonBaseStats {
     return stats.reduce<PokemonBaseStats>((acc, stat) => {
@@ -311,55 +325,43 @@ export class PokemonService {
     const page = query.page || 1;
     const limit = Math.min(query.limit || 20, 20);
     const skip = (page - 1) * limit;
-    const requiredCount = page * limit;
     const search = query.search?.trim().toLowerCase();
     const typeFilter = query.type?.trim().toLowerCase();
 
-    await this.hydrateCacheUntil(requiredCount);
-
-    if (search || typeFilter) {
-      const allCached = await this.listAllPokemonCache();
-
-      const filtered = allCached.filter((item) => {
-        const types = item.types;
-        const matchesSearch = search
-          ? item.name.toLowerCase().includes(search)
-          : true;
-        const matchesType = typeFilter
-          ? types.some(
-              (t) => typeof t === 'string' && t.toLowerCase() === typeFilter,
-            )
-          : true;
-
-        return matchesSearch && matchesType;
-      });
+    if (!search && !typeFilter) {
+      const list = await this.fetchPokemonList(skip, limit);
+      const names = list.results.map((item) => item.name);
+      const data = await this.fetchCatalogEntriesByNames(names);
 
       return {
-        data: filtered.slice(skip, skip + limit),
+        data,
         meta: {
           page,
           limit,
-          total: filtered.length,
-          totalPages: Math.ceil(filtered.length / limit),
+          total: Number(list.count ?? 0),
+          totalPages: Math.ceil(Number(list.count ?? 0) / limit),
         },
       };
     }
 
-    const [data, cacheTotal, catalogTotal] = await Promise.all([
-      this.listPokemonCache(skip, limit),
-      this.countPokemonCache(),
-      this.getPokemonCatalogTotal(),
-    ]);
+    const candidateNames = typeFilter
+      ? await this.fetchPokemonNamesByType(typeFilter)
+      : await this.fetchAllPokemonNames();
 
-    const total = Math.max(cacheTotal, catalogTotal);
+    const filteredNames = search
+      ? candidateNames.filter((name) => name.toLowerCase().includes(search))
+      : candidateNames;
+
+    const pageNames = filteredNames.slice(skip, skip + limit);
+    const data = await this.fetchCatalogEntriesByNames(pageNames);
 
     return {
       data,
       meta: {
         page,
         limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        total: filteredNames.length,
+        totalPages: Math.ceil(filteredNames.length / limit),
       },
     };
   }
