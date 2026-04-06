@@ -38,3 +38,91 @@ textarea,
 select {
   font: inherit;
 }
+
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.auth-page {
+  background:
+    radial-gradient(circle at 10% 10%, #dbeafe 0%, transparent 38%),
+    radial-gradient(circle at 80% 85%, #dcfce7 0%, transparent 40%),
+    var(--color-bg);
+}
+
+.card {
+  width: 100%;
+  max-width: 560px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+.form-grid {
+  margin-top: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+
+label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+input {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.75rem 0.85rem;
+  background: #fff;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 0.72rem 1rem;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-weight: 600;
+}
+
+button:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #b91c1c;
+}
+
+.dashboard-card {
+  max-width: 760px;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 1.1rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
