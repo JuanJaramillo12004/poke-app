@@ -1,19 +1,21 @@
 import { useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
-import { FavoritePokemonCard } from "../components/pokemon/FavoritePokemonCard";
+import { CatalogPokemonCard } from "../components/pokemon/CatalogPokemonCard";
 import { PokemonFilters } from "../components/pokemon/PokemonFilters";
 import { PokemonPagination } from "../components/pokemon/PokemonPagination";
 import { StatusPanel } from "../components/pokemon/StatusPanel";
-import { useFavorites } from "../hooks/useFavorites";
+import { useCatalog } from "../hooks/useCatalog";
+import type { CatalogPokemon } from "../types/pokemon.types";
 
-export function DashboardPage() {
-  const { logout } = useAuth();
+export function CatalogPage() {
+  const { user, logout } = useAuth();
   const {
-    favorites,
+    catalog,
     meta,
     isLoading,
-    deletingFavoriteId,
+    addingId,
+    favoritePokemonIds,
     searchInput,
     typeInput,
     currentPage,
@@ -24,14 +26,14 @@ export function DashboardPage() {
     clearFilters,
     goToPreviousPage,
     goToNextPage,
-    deleteFavorite,
-  } = useFavorites();
+    addToFavorites,
+  } = useCatalog();
 
-  const handleDeleteFavorite = useCallback(
-    (favoriteId: number) => {
-      void deleteFavorite(favoriteId);
+  const handleAddToFavorites = useCallback(
+    (pokemon: CatalogPokemon) => {
+      void addToFavorites(pokemon);
     },
-    [deleteFavorite],
+    [addToFavorites],
   );
 
   return (
@@ -46,8 +48,11 @@ export function DashboardPage() {
               Pokedex
             </p>
             <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[var(--color-text)]">
-              Mis favoritos
+              Catalogo Pokemon
             </h1>
+            <p className="mt-1 text-sm text-[var(--color-muted)]">
+              Hola, {user?.email}
+            </p>
           </div>
           <div className="flex gap-2">
             <Link
@@ -57,10 +62,10 @@ export function DashboardPage() {
               Nuevo favorito
             </Link>
             <Link
-              to="/catalog"
+              to="/"
               className="rounded-xl border border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary-soft)] hover:text-[var(--color-primary-strong)]"
             >
-              Ver catalogo
+              Ver favoritos
             </Link>
             <button
               type="button"
@@ -88,14 +93,15 @@ export function DashboardPage() {
           onClear={clearFilters}
         />
 
-        {!isLoading && favorites.length > 0 ? (
+        {!isLoading && catalog.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {favorites.map((favorite) => (
-              <FavoritePokemonCard
-                key={favorite.id}
-                favorite={favorite}
-                deletingFavoriteId={deletingFavoriteId}
-                onDelete={handleDeleteFavorite}
+            {catalog.map((pokemon) => (
+              <CatalogPokemonCard
+                key={pokemon.pokemonId}
+                pokemon={pokemon}
+                addingId={addingId}
+                favoritePokemonIds={favoritePokemonIds}
+                onAdd={handleAddToFavorites}
               />
             ))}
           </div>
@@ -103,16 +109,16 @@ export function DashboardPage() {
 
         <StatusPanel
           isLoading={isLoading}
-          hasItems={favorites.length > 0}
-          loadingText="Cargando favoritos..."
-          emptyText="No tienes favoritos para mostrar."
+          hasItems={catalog.length > 0}
+          loadingText="Cargando catalogo..."
+          emptyText="No se encontraron pokemon con esos filtros."
         />
 
         <PokemonPagination
           currentPage={currentPage}
           totalPages={totalPages}
           isLoading={isLoading}
-          summary={`Mostrando ${favorites.length} de ${meta.total} favoritos`}
+          summary={`Mostrando ${catalog.length} de ${meta.total} pokemon`}
           onPrevious={goToPreviousPage}
           onNext={goToNextPage}
         />
