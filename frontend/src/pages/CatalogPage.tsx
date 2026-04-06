@@ -54,30 +54,30 @@ export function CatalogPage() {
               Hola, {user?.email}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex sm:flex-wrap sm:justify-end">
             <Link
               to="/favorites/new"
-              className="rounded-xl bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--color-primary-strong)]"
+              className="w-full rounded-xl bg-[var(--color-primary)] px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-[var(--color-primary-strong)] sm:w-auto"
             >
               Nuevo favorito
             </Link>
             <Link
               to="/"
-              className="rounded-xl border border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary-soft)] hover:text-[var(--color-primary-strong)]"
+              className="w-full rounded-xl border border-[var(--color-border)] px-4 py-2 text-center text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary-soft)] hover:text-[var(--color-primary-strong)] sm:w-auto"
             >
               Ver favoritos
             </Link>
             <button
               type="button"
               onClick={clearFilters}
-              className="rounded-xl border border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary-soft)] hover:text-[var(--color-primary-strong)]"
+              className="w-full rounded-xl border border-[var(--color-border)] px-4 py-2 text-center text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary-soft)] hover:text-[var(--color-primary-strong)] sm:w-auto"
             >
               Limpiar filtros
             </button>
             <button
               type="button"
               onClick={logout}
-              className="rounded-xl border border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary-soft)] hover:text-[var(--color-primary-strong)]"
+              className="w-full rounded-xl border border-[var(--color-border)] px-4 py-2 text-center text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary-soft)] hover:text-[var(--color-primary-strong)] sm:w-auto"
             >
               Cerrar sesion
             </button>
