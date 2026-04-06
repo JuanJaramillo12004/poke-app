@@ -12,6 +12,7 @@ import { QueryPokemonDto } from './dto/query-pokemon.dto';
 import { UpdateFavoritePokemonDto } from './dto/update-favorite-pokemon.dto';
 import {
   CachedPokemon,
+  JsonValue,
   PokemonBaseStats,
   PokemonCacheRow,
   PokemonListResponse,
@@ -26,7 +27,7 @@ export class PokemonService {
   constructor(private readonly prisma: PrismaService) {}
 
   // Helper methods for parsing JSON fields, mapping database rows to domain models, and interacting with the external PokeAPI.
-  private parseJsonArray(value: unknown): string[] {
+  private parseJsonArray(value: JsonValue | string): string[] {
     if (Array.isArray(value)) {
       return value.filter((item): item is string => typeof item === 'string');
     }
@@ -34,7 +35,7 @@ export class PokemonService {
     if (typeof value === 'string') {
       // Translate failures into explicit domain or HTTP errors.
       try {
-        const parsed = JSON.parse(value) as unknown;
+        const parsed = JSON.parse(value) as JsonValue;
         if (Array.isArray(parsed)) {
           return parsed.filter(
             (item): item is string => typeof item === 'string',
@@ -49,7 +50,7 @@ export class PokemonService {
   }
 
   // Helper method to parse a JSON object field that should contain numeric values, returning an empty object if parsing fails or if the structure is invalid.
-  private parseJsonRecord(value: unknown): PokemonBaseStats {
+  private parseJsonRecord(value: JsonValue | string): PokemonBaseStats {
     if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
       const entries = Object.entries(value).filter(
         (entry): entry is [string, number] => typeof entry[1] === 'number',
@@ -60,7 +61,7 @@ export class PokemonService {
     if (typeof value === 'string') {
       // Translate failures into explicit domain or HTTP errors.
       try {
-        const parsed = JSON.parse(value) as unknown;
+        const parsed = JSON.parse(value) as JsonValue;
         if (
           typeof parsed === 'object' &&
           parsed !== null &&
@@ -294,7 +295,7 @@ export class PokemonService {
           comments: createFavoritePokemonDto.comments,
         },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'

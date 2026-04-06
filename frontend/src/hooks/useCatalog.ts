@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ChangeEvent } from "react";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "../api/axios";
+import type { ApiHandledError } from "../api/axios";
 import { createFavoritePokemon, getCatalogPokemons } from "../api/pokemon.api";
 import type {
   CatalogPokemon,
@@ -54,8 +55,8 @@ export function useCatalog() {
 
         setCatalog(response.data);
         setMeta(response.meta);
-      } catch (error: unknown) {
-        toast.error(getApiErrorMessage(error));
+      } catch (error) {
+        toast.error(getApiErrorMessage(error as ApiHandledError));
       } finally {
         setIsLoading(false);
       }
@@ -134,8 +135,8 @@ export function useCatalog() {
         return next;
       });
       toast.success(`${pokemon.name} agregado a favoritos`);
-    } catch (error: unknown) {
-      toast.error(getApiErrorMessage(error));
+    } catch (error) {
+      toast.error(getApiErrorMessage(error as ApiHandledError));
     } finally {
       setAddingId(null);
     }

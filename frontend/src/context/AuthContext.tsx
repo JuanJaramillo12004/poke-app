@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { clearStoredToken, getStoredToken, setStoredToken } from "../api/axios";
 import { getApiErrorMessage } from "../api/axios";
+import type { ApiHandledError } from "../api/axios";
 import {
   getProfile,
   login as loginRequest,
@@ -21,7 +22,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-// Bootstraps user session from the stored token on app startup.
+    // Bootstraps user session from the stored token on app startup.
     async function bootstrapAuth() {
       const existingToken = getStoredToken();
 
@@ -35,11 +36,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const profile = await getProfile();
         setUser(profile);
         setToken(existingToken);
-      } catch (error: unknown) {
+      } catch (error) {
         clearStoredToken();
         setToken(null);
         setUser(null);
-        toast.error(getApiErrorMessage(error));
+        toast.error(getApiErrorMessage(error as ApiHandledError));
       } finally {
         setIsLoading(false);
       }
@@ -58,8 +59,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const profile = await getProfile();
       setUser(profile);
       toast.success("Sesion iniciada correctamente");
-    } catch (error: unknown) {
-      toast.error(getApiErrorMessage(error));
+    } catch (error) {
+      toast.error(getApiErrorMessage(error as ApiHandledError));
       throw error;
     }
   }, []);
@@ -71,8 +72,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       try {
         await registerRequest(payload);
         toast.success("Cuenta creada correctamente");
-      } catch (error: unknown) {
-        toast.error(getApiErrorMessage(error));
+      } catch (error) {
+        toast.error(getApiErrorMessage(error as ApiHandledError));
         throw error;
       }
 

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "../api/axios";
+import type { ApiHandledError } from "../api/axios";
 import {
   getFavoritePokemonById,
   updateFavoritePokemon,
@@ -34,7 +35,7 @@ export function EditFavoritePage() {
   });
 
   useEffect(() => {
-// Fetch helper: loads remote or persisted data for the current workflow.
+    // Fetch helper: loads remote or persisted data for the current workflow.
     async function loadFavorite() {
       if (!Number.isInteger(favoriteId) || favoriteId <= 0) {
         setIsLoadingFavorite(false);
@@ -46,8 +47,8 @@ export function EditFavoritePage() {
         const response = await getFavoritePokemonById(favoriteId);
         setFavorite(response);
         setValue("comments", response.comments ?? "");
-      } catch (error: unknown) {
-        toast.error(getApiErrorMessage(error));
+      } catch (error) {
+        toast.error(getApiErrorMessage(error as ApiHandledError));
       } finally {
         setIsLoadingFavorite(false);
       }
@@ -68,8 +69,8 @@ export function EditFavoritePage() {
       });
       toast.success("Comentario actualizado");
       navigate(`/favorites/${favoriteId}`);
-    } catch (error: unknown) {
-      toast.error(getApiErrorMessage(error));
+    } catch (error) {
+      toast.error(getApiErrorMessage(error as ApiHandledError));
     }
   });
 

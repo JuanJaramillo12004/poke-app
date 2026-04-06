@@ -15,7 +15,7 @@ export class UsersService {
       return await this.prisma.user.create({
         data,
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'

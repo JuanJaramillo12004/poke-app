@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { createFavoritePokemon } from "../api/pokemon.api";
 import { getApiErrorMessage } from "../api/axios";
+import type { ApiHandledError } from "../api/axios";
 import type { CreateFavoritePokemonDto } from "../types/pokemon.types";
 
 type AddFavoriteFormValues = {
@@ -37,8 +38,8 @@ export function AddFavoritePage() {
       const favorite = await createFavoritePokemon(payload);
       toast.success("Pokemon agregado a favoritos");
       navigate(`/favorites/${favorite.id}`);
-    } catch (error: unknown) {
-      toast.error(getApiErrorMessage(error));
+    } catch (error) {
+      toast.error(getApiErrorMessage(error as ApiHandledError));
     }
   });
 

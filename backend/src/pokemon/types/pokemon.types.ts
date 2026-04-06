@@ -1,6 +1,15 @@
 // Type alias: PokemonBaseStats.
 export type PokemonBaseStats = Record<string, number>;
 
+// Type alias: JSON value supported by cached raw database fields.
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
+
 // Type alias: CachedPokemon.
 export type CachedPokemon = {
   pokemonId: number;
@@ -32,6 +41,6 @@ export type PokemonCacheRow = {
   pokemonId: number;
   name: string;
   imageUrl: string;
-  types: unknown;
-  baseStats: unknown;
+  types: JsonValue | string;
+  baseStats: JsonValue | string;
 };

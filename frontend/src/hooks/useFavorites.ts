@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ChangeEvent } from "react";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "../api/axios";
+import type { ApiHandledError } from "../api/axios";
 import { deleteFavoritePokemon, getFavoritePokemons } from "../api/pokemon.api";
 import type {
   FavoritePokemon,
@@ -53,8 +54,8 @@ export function useFavorites() {
 
         setFavorites(response.data);
         setMeta(response.meta);
-      } catch (error: unknown) {
-        toast.error(getApiErrorMessage(error));
+      } catch (error) {
+        toast.error(getApiErrorMessage(error as ApiHandledError));
       } finally {
         setIsLoading(false);
       }
@@ -141,8 +142,8 @@ export function useFavorites() {
         if (!shouldGoPreviousPage) {
           await loadFavorites(query);
         }
-      } catch (error: unknown) {
-        toast.error(getApiErrorMessage(error));
+      } catch (error) {
+        toast.error(getApiErrorMessage(error as ApiHandledError));
       } finally {
         setDeletingFavoriteId(null);
       }

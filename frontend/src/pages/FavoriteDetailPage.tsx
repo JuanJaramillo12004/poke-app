@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "../api/axios";
+import type { ApiHandledError } from "../api/axios";
 import {
   deleteFavoritePokemon,
   getFavoritePokemonById,
@@ -19,7 +20,7 @@ export function FavoriteDetailPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-// Fetch helper: loads remote or persisted data for the current workflow.
+    // Fetch helper: loads remote or persisted data for the current workflow.
     async function loadFavorite() {
       if (!Number.isInteger(favoriteId) || favoriteId <= 0) {
         setIsLoading(false);
@@ -30,8 +31,8 @@ export function FavoriteDetailPage() {
       try {
         const response = await getFavoritePokemonById(favoriteId);
         setFavorite(response);
-      } catch (error: unknown) {
-        toast.error(getApiErrorMessage(error));
+      } catch (error) {
+        toast.error(getApiErrorMessage(error as ApiHandledError));
       } finally {
         setIsLoading(false);
       }
@@ -56,8 +57,8 @@ export function FavoriteDetailPage() {
       await deleteFavoritePokemon(favorite.id);
       toast.success("Favorito eliminado");
       navigate("/");
-    } catch (error: unknown) {
-      toast.error(getApiErrorMessage(error));
+    } catch (error) {
+      toast.error(getApiErrorMessage(error as ApiHandledError));
     } finally {
       setIsDeleting(false);
     }

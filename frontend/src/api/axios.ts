@@ -1,9 +1,13 @@
 import axios from "axios";
+import type { AxiosError } from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 // Storage key used to persist the JWT token in the browser.
 export const TOKEN_STORAGE_KEY = "poke_app_token";
+
+type ApiErrorBody = { message?: string | string[] };
+export type ApiHandledError = AxiosError<ApiErrorBody> | Error;
 
 // API helper: wraps HTTP calls to keep components and hooks clean.
 export function getStoredToken(): string | null {
@@ -40,14 +44,12 @@ api.interceptors.request.use((config) => {
 });
 
 // API helper: wraps HTTP calls to keep components and hooks clean.
-export function getApiErrorMessage(error: unknown): string {
+export function getApiErrorMessage(error: ApiHandledError): string {
   if (!axios.isAxiosError(error)) {
     return "Ocurrio un error inesperado";
   }
 
-  const responseData = error.response?.data as
-    | { message?: string | string[] }
-    | undefined;
+  const responseData = error.response?.data;
   const message = responseData?.message;
 
   if (Array.isArray(message)) {
