@@ -7,6 +7,7 @@ import { JwtPayload } from '../types/auth.types';
 import { UsersService } from '../../users/users.service';
 
 @Injectable()
+// Auth strategy: validates JWT payloads and maps them to request user context.
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     configService: ConfigService,
@@ -25,6 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  // Validates the JWT payload by looking up the user in the database. If valid, returns user info without the password; otherwise, throws an unauthorized exception.
   async validate(payload: JwtPayload): Promise<Omit<User, 'password'>> {
     const user = await this.usersService.findById(payload.sub);
 

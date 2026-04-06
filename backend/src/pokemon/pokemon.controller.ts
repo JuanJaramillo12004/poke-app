@@ -21,14 +21,17 @@ import { PokemonService } from './pokemon.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('pokemon')
+// Controller: defines HTTP endpoints for the Pokemon.ToLower() feature.
 export class PokemonController {
   constructor(private readonly pokemonService: PokemonService) {}
 
+  // Creates a new favorite Pokemon for the authenticated user using the provided data in the request body.
   @Post()
   create(@Req() req: RequestWithUser, @Body() dto: CreateFavoritePokemonDto) {
     return this.pokemonService.createFavoritePokemon(req.user.id, dto);
   }
 
+  // Retrieves a paginated list of the authenticated user's favorite Pokemon, with optional filtering by name and type based on query parameters.
   @Get()
   findAllFavorites(
     @Req() req: RequestWithUser,
@@ -37,11 +40,13 @@ export class PokemonController {
     return this.pokemonService.findAllFavoritePokemons(req.user.id, query);
   }
 
+  // Retrieves a paginated list of Pokemon from the external API, with optional filtering by name and type based on query parameters.
   @Get('catalog')
   findAllCatalog(@Query() query: QueryPokemonDto) {
     return this.pokemonService.findAllPokemons(query);
   }
 
+  // Retrieves a specific favorite Pokemon by its ID for the authenticated user.
   @Get(':id')
   findOneFavorite(
     @Req() req: RequestWithUser,
@@ -50,6 +55,7 @@ export class PokemonController {
     return this.pokemonService.findOneFavoritePokemon(req.user.id, id);
   }
 
+  // Updates the comments of a specific favorite Pokemon by its ID for the authenticated user using the provided data in the request body.
   @Put(':id')
   updateFavorite(
     @Req() req: RequestWithUser,
@@ -59,6 +65,7 @@ export class PokemonController {
     return this.pokemonService.updateFavoritePokemon(req.user.id, id, dto);
   }
 
+  // Deletes a specific favorite Pokemon by its ID for the authenticated user.
   @Delete(':id')
   removeFavorite(
     @Req() req: RequestWithUser,

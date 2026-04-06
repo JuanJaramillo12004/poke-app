@@ -10,6 +10,7 @@ type AddFavoriteFormValues = {
   comments: string;
 };
 
+// Page component: handles screen-level layout, actions, and data flow.
 export function AddFavoritePage() {
   const navigate = useNavigate();
 
@@ -24,12 +25,14 @@ export function AddFavoritePage() {
     },
   });
 
+  // Form submission handler: validates input, sends create request, and handles response.
   const onSubmit = handleSubmit(async (values) => {
     const payload: CreateFavoritePokemonDto = {
       name: values.name,
       comments: values.comments.trim() ? values.comments.trim() : undefined,
     };
 
+    // Surface request failures to the user with clear feedback.
     try {
       const favorite = await createFavoritePokemon(payload);
       toast.success("Pokemon agregado a favoritos");
@@ -39,6 +42,7 @@ export function AddFavoritePage() {
     }
   });
 
+  // Render AddFavoritePage for the current state.
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-bg)] px-4 py-10">
       <div className="pointer-events-none absolute -left-24 top-4 h-56 w-56 rounded-full bg-[var(--color-primary-soft)]/60 blur-3xl" />

@@ -8,6 +8,7 @@ import { StatusPanel } from "../components/pokemon/StatusPanel";
 import { useCatalog } from "../hooks/useCatalog";
 import type { CatalogPokemon } from "../types/pokemon.types";
 
+// Page component: handles screen-level layout, actions, and data flow.
 export function CatalogPage() {
   const { user, logout } = useAuth();
   const {
@@ -36,6 +37,7 @@ export function CatalogPage() {
     [addToFavorites],
   );
 
+  // Render CatalogPage for the current state.
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-bg)] px-4 py-10">
       <div className="pointer-events-none absolute -left-24 top-4 h-56 w-56 rounded-full bg-[var(--color-primary-soft)]/60 blur-3xl" />

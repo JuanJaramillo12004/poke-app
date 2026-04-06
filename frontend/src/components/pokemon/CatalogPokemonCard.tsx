@@ -8,6 +8,7 @@ type CatalogPokemonCardProps = {
   onAdd: (pokemon: CatalogPokemon) => void;
 };
 
+// Card component: renders catalog Pokemon info and add-to-favorites action.
 export function CatalogPokemonCard({
   pokemon,
   addingId,
@@ -21,6 +22,7 @@ export function CatalogPokemonCard({
   const isAdding = addingId === pokemon.pokemonId;
   const isInFavorites = favoritePokemonIds.has(pokemon.pokemonId);
 
+  // Render CatalogPokemonCard for the current state.
   return (
     <article className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <div className="mb-3 flex items-center justify-between gap-3">

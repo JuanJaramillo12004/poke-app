@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import type { LoginDto } from "../types/auth.types";
 
+// Page component: handles screen-level layout, actions, and data flow.
 export function LoginPage() {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
@@ -23,6 +24,7 @@ export function LoginPage() {
   }
 
   const onSubmit = handleSubmit(async (values) => {
+    // Surface request failures to the user with clear feedback.
     try {
       await login(values);
       navigate("/");
@@ -31,6 +33,7 @@ export function LoginPage() {
     }
   });
 
+  // Render LoginPage for the current state.
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-bg)] px-4 py-10">
       <div className="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-[var(--color-primary-soft)]/70 blur-3xl" />

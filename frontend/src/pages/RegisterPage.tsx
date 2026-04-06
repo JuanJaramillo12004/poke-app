@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import type { RegisterDto } from "../types/auth.types";
 
+// Page component: handles screen-level layout, actions, and data flow.
 export function RegisterPage() {
   const navigate = useNavigate();
   const { register: registerUser, isAuthenticated } = useAuth();
@@ -23,6 +24,7 @@ export function RegisterPage() {
   }
 
   const onSubmit = handleSubmit(async (values) => {
+    // Surface request failures to the user with clear feedback.
     try {
       await registerUser(values);
       navigate("/");
@@ -31,6 +33,7 @@ export function RegisterPage() {
     }
   });
 
+  // Render RegisterPage for the current state.
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-bg)] px-4 py-10">
       <div className="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-[var(--color-primary-soft)]/70 blur-3xl" />

@@ -21,15 +21,18 @@ import {
 const POKEAPI_BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
 
 @Injectable()
+// Service: manages Pokemon catalog caching and favorite Pokemon operations.
 export class PokemonService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // Helper methods for parsing JSON fields, mapping database rows to domain models, and interacting with the external PokeAPI.
   private parseJsonArray(value: unknown): string[] {
     if (Array.isArray(value)) {
       return value.filter((item): item is string => typeof item === 'string');
     }
 
     if (typeof value === 'string') {
+      // Translate failures into explicit domain or HTTP errors.
       try {
         const parsed = JSON.parse(value) as unknown;
         if (Array.isArray(parsed)) {
@@ -45,6 +48,7 @@ export class PokemonService {
     return [];
   }
 
+  // Helper method to parse a JSON object field that should contain numeric values, returning an empty object if parsing fails or if the structure is invalid.
   private parseJsonRecord(value: unknown): PokemonBaseStats {
     if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
       const entries = Object.entries(value).filter(
@@ -54,6 +58,7 @@ export class PokemonService {
     }
 
     if (typeof value === 'string') {
+      // Translate failures into explicit domain or HTTP errors.
       try {
         const parsed = JSON.parse(value) as unknown;
         if (
@@ -74,6 +79,7 @@ export class PokemonService {
     return {};
   }
 
+  // Helper method to map a database row from the PokemonCache table to the CachedPokemon domain model, including parsing JSON fields for types and base stats.
   private mapRowToCachedPokemon(row: PokemonCacheRow): CachedPokemon {
     return {
       pokemonId: row.pokemonId,
@@ -84,6 +90,7 @@ export class PokemonService {
     };
   }
 
+  // Helper methods for counting cached Pokemon, listing cached Pokemon with pagination, fetching Pokemon data from the external API, and upserting Pokemon data into the cache.
   private async countPokemonCache(): Promise<number> {
     const result = await this.prisma.$queryRaw<Array<{ total: number }>>`
       SELECT COUNT(*) as total
@@ -93,6 +100,7 @@ export class PokemonService {
     return Number(result[0]?.total ?? 0);
   }
 
+  // Helper method to list cached Pokemon with pagination, mapping database rows to domain models.
   private async listPokemonCache(
     skip: number,
     take: number,
@@ -107,6 +115,7 @@ export class PokemonService {
     return rows.map((row) => this.mapRowToCachedPokemon(row));
   }
 
+  // Helper method to list all cached Pokemon without pagination, used for in-memory filtering when search or type filters are applied.
   private async listAllPokemonCache(): Promise<CachedPokemon[]> {
     const rows = await this.prisma.$queryRaw<PokemonCacheRow[]>`
       SELECT "pokemonId", "name", "imageUrl", "types", "baseStats"
@@ -117,6 +126,7 @@ export class PokemonService {
     return rows.map((row) => this.mapRowToCachedPokemon(row));
   }
 
+  // Helper method to fetch Pokemon data from the external PokeAPI by name or ID, translating failures into explicit not found exceptions.
   private async fetchPokemonData(name: string): Promise<PokemonResponse> {
     const response = await fetch(`${POKEAPI_BASE_URL}/${name}`);
 
@@ -127,6 +137,7 @@ export class PokemonService {
     return (await response.json()) as PokemonResponse;
   }
 
+  // Helper method to map a PokemonResponse from the PokeAPI to the CachedPokemon domain model, extracting relevant fields and transforming the data structure as needed.
   private mapToCachedPokemon(pokemon: PokemonResponse): CachedPokemon {
     return {
       pokemonId: pokemon.id,
@@ -137,6 +148,7 @@ export class PokemonService {
     };
   }
 
+  // Helper method to fetch a list of Pokemon from the external PokeAPI with pagination parameters, translating failures into explicit internal server errors.
   private async fetchPokemonList(
     offset: number,
     limit: number,
@@ -154,7 +166,9 @@ export class PokemonService {
     return (await response.json()) as PokemonListResponse;
   }
 
+  // Helper method to get the total count of Pokemon in the external PokeAPI, with a fallback to counting cached Pokemon if the API request fails, ensuring that pagination metadata can be provided even if the external API is unavailable.
   private async getPokemonCatalogTotal(): Promise<number> {
+    // Translate failures into explicit domain or HTTP errors.
     try {
       const list = await this.fetchPokemonList(0, 1);
       return Number(list.count ?? 0);
@@ -163,6 +177,7 @@ export class PokemonService {
     }
   }
 
+  // Helper method to upsert Pokemon data into the cache, inserting a new record or updating an existing one based on the pokemonId, and returning the mapped CachedPokemon domain model.
   private async upsertPokemonCache(pokemon: PokemonResponse) {
     const mapped = this.mapToCachedPokemon(pokemon);
 
@@ -196,6 +211,7 @@ export class PokemonService {
     return mapped;
   }
 
+  // Helper methods for counting cached Pokemon, listing cached Pokemon with pagination, fetching Pokemon data from the external API, and upserting Pokemon data into the cache.
   private async getOrCreatePokemonCacheByIdentifier(identifier: string) {
     const normalizedIdentifier = identifier.trim().toLowerCase();
     const parsedId = Number(normalizedIdentifier);
@@ -223,6 +239,7 @@ export class PokemonService {
     return this.upsertPokemonCache(pokemon);
   }
 
+  // Helper method to ensure the cache is populated with enough Pokemon data to satisfy pagination requests, fetching and caching Pokemon in batches until the required count is reached or the external API indicates there are no more Pokemon.
   private async hydrateCacheUntil(requiredCount: number) {
     let currentCount = await this.countPokemonCache();
 
@@ -247,6 +264,7 @@ export class PokemonService {
     }
   }
 
+  // Helper method to map the stats array from the PokeAPI response to a PokemonBaseStats object, extracting the base stat values and organizing them by stat name.
   private mapBaseStats(stats: PokemonResponse['stats']): PokemonBaseStats {
     return stats.reduce<PokemonBaseStats>((acc, stat) => {
       acc[stat.stat.name] = stat.base_stat;
@@ -254,6 +272,7 @@ export class PokemonService {
     }, {});
   }
 
+  // Public methods for creating, retrieving, updating, and deleting favorite Pokemon for authenticated users, as well as retrieving Pokemon from the catalog with optional filtering and pagination.
   async createFavoritePokemon(
     userId: number,
     createFavoritePokemonDto: CreateFavoritePokemonDto,
@@ -262,6 +281,7 @@ export class PokemonService {
       createFavoritePokemonDto.name,
     );
 
+    // Translate failures into explicit domain or HTTP errors.
     try {
       return await this.prisma.favoritePokemon.create({
         data: {
@@ -285,6 +305,7 @@ export class PokemonService {
     }
   }
 
+  // Public method to retrieve a paginated list of the authenticated user's favorite Pokemon, with optional filtering by name and type based on query parameters.
   async findAllPokemons(query: QueryPokemonDto) {
     const page = query.page || 1;
     const limit = Math.min(query.limit || 20, 20);
@@ -342,6 +363,7 @@ export class PokemonService {
     };
   }
 
+  // Public method to retrieve a specific favorite Pokemon by its ID for the authenticated user.
   async findAllFavoritePokemons(
     userId: number,
     query: QueryFavoritePokemonDto,
@@ -412,6 +434,7 @@ export class PokemonService {
     };
   }
 
+  // Public method to retrieve a specific favorite Pokemon by its ID for the authenticated user.
   async findOneFavoritePokemon(userId: number, id: number) {
     const favoritePokemon = await this.prisma.favoritePokemon.findFirst({
       where: { id, userId },
@@ -445,6 +468,7 @@ export class PokemonService {
     });
   }
 
+  // Public method to delete a specific favorite Pokemon by its ID for the authenticated user.
   async removeFavoritePokemon(userId: number, id: number) {
     const favoritePokemon = await this.prisma.favoritePokemon.findFirst({
       where: { id, userId },

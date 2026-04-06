@@ -9,6 +9,7 @@ type PokemonFiltersProps = {
   onClear: () => void;
 };
 
+// Presentational component: renders search and type filter controls.
 export function PokemonFilters({
   searchValue,
   typeValue,
@@ -17,6 +18,7 @@ export function PokemonFilters({
   onApply,
   onClear,
 }: PokemonFiltersProps) {
+  // Render PokemonFilters for the current state.
   return (
     <section className="mb-5 grid gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] p-4 sm:grid-cols-[1fr_1fr_auto_auto]">
       <input

@@ -8,7 +8,9 @@ import { FavoriteDetailPage } from "./pages/FavoriteDetailPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 
+// Helper function used to keep the main flow readable.
 function App() {
+  // Render App for the current state.
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />

@@ -8,6 +8,7 @@ import {
 } from "../api/pokemon.api";
 import type { FavoritePokemon } from "../types/pokemon.types";
 
+// Page component: handles screen-level layout, actions, and data flow.
 export function FavoriteDetailPage() {
   const params = useParams();
   const navigate = useNavigate();
@@ -18,12 +19,14 @@ export function FavoriteDetailPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+// Fetch helper: loads remote or persisted data for the current workflow.
     async function loadFavorite() {
       if (!Number.isInteger(favoriteId) || favoriteId <= 0) {
         setIsLoading(false);
         return;
       }
 
+      // Surface request failures to the user with clear feedback.
       try {
         const response = await getFavoritePokemonById(favoriteId);
         setFavorite(response);
@@ -48,6 +51,7 @@ export function FavoriteDetailPage() {
 
     setIsDeleting(true);
 
+    // Surface request failures to the user with clear feedback.
     try {
       await deleteFavoritePokemon(favorite.id);
       toast.success("Favorito eliminado");
@@ -59,6 +63,7 @@ export function FavoriteDetailPage() {
     }
   };
 
+  // Render FavoriteDetailPage for the current state.
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-bg)] px-4 py-10">
       <div className="pointer-events-none absolute -left-24 top-4 h-56 w-56 rounded-full bg-[var(--color-primary-soft)]/60 blur-3xl" />
@@ -117,6 +122,7 @@ export function FavoriteDetailPage() {
                 ([a], [b]) => a.localeCompare(b),
               );
 
+              // Render FavoriteDetailPage for the current state.
               return (
                 <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] p-4">
                   <p className="mb-3 text-sm font-semibold text-[var(--color-text)]">

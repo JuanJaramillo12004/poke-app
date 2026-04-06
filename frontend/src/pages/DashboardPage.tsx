@@ -7,6 +7,7 @@ import { PokemonPagination } from "../components/pokemon/PokemonPagination";
 import { StatusPanel } from "../components/pokemon/StatusPanel";
 import { useFavorites } from "../hooks/useFavorites";
 
+// Page component: handles screen-level layout, actions, and data flow.
 export function DashboardPage() {
   const { logout } = useAuth();
   const {
@@ -34,6 +35,7 @@ export function DashboardPage() {
     [deleteFavorite],
   );
 
+  // Render DashboardPage for the current state.
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-bg)] px-4 py-10">
       <div className="pointer-events-none absolute -left-24 top-4 h-56 w-56 rounded-full bg-[var(--color-primary-soft)]/60 blur-3xl" />

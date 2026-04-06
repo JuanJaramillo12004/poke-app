@@ -1,5 +1,6 @@
 import type { AuthUser, LoginDto, RegisterDto } from "./auth.types";
 
+// Type alias: AuthContextValue.
 export type AuthContextValue = {
   user: AuthUser | null;
   token: string | null;
@@ -10,6 +11,7 @@ export type AuthContextValue = {
   logout: () => void;
 };
 
+// Component props contract.
 export type AuthProviderProps = {
   children: React.ReactNode;
 };

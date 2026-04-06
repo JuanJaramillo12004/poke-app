@@ -2,7 +2,9 @@ import { useCallback } from "react";
 import { Link } from "react-router-dom";
 import type { FavoritePokemon } from "../../types/pokemon.types";
 
+// Helper function used to keep the main flow readable.
 function DetailIcon() {
+  // Render the DetailIcon SVG icon.
   return (
     <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
       <path
@@ -15,7 +17,9 @@ function DetailIcon() {
   );
 }
 
+// Helper function used to keep the main flow readable.
 function EditIcon() {
+  // Render the EditIcon SVG icon.
   return (
     <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
       <path
@@ -27,7 +31,9 @@ function EditIcon() {
   );
 }
 
+// Helper function used to keep the main flow readable.
 function DeleteIcon() {
+  // Render the DeleteIcon SVG icon.
   return (
     <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
       <path
@@ -45,6 +51,7 @@ type FavoritePokemonCardProps = {
   onDelete: (favoriteId: number) => void;
 };
 
+// Card component: renders a favorite Pokemon with quick actions.
 export function FavoritePokemonCard({
   favorite,
   deletingFavoriteId,
@@ -56,6 +63,7 @@ export function FavoritePokemonCard({
 
   const isDeleting = deletingFavoriteId === favorite.id;
 
+  // Render FavoritePokemonCard for the current state.
   return (
     <article className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <div className="mb-3 flex items-center justify-between gap-3">

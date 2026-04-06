@@ -1,10 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 
+// Route guard component: blocks private routes until the user is authenticated.
 export function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
+    // Render ProtectedRoute for the current state.
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--color-bg)] px-4">
         <section className="w-full max-w-md rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center shadow-[0_18px_45px_-25px_rgba(15,23,42,0.5)]">

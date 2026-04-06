@@ -13,6 +13,7 @@ type EditFavoriteFormValues = {
   comments: string;
 };
 
+// Page component: handles screen-level layout, actions, and data flow.
 export function EditFavoritePage() {
   const params = useParams();
   const navigate = useNavigate();
@@ -33,12 +34,14 @@ export function EditFavoritePage() {
   });
 
   useEffect(() => {
+// Fetch helper: loads remote or persisted data for the current workflow.
     async function loadFavorite() {
       if (!Number.isInteger(favoriteId) || favoriteId <= 0) {
         setIsLoadingFavorite(false);
         return;
       }
 
+      // Surface request failures to the user with clear feedback.
       try {
         const response = await getFavoritePokemonById(favoriteId);
         setFavorite(response);
@@ -58,6 +61,7 @@ export function EditFavoritePage() {
   }
 
   const onSubmit = handleSubmit(async (values) => {
+    // Surface request failures to the user with clear feedback.
     try {
       await updateFavoritePokemon(favoriteId, {
         comments: values.comments.trim() || undefined,
@@ -69,6 +73,7 @@ export function EditFavoritePage() {
     }
   });
 
+  // Render EditFavoritePage for the current state.
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-bg)] px-4 py-10">
       <div className="pointer-events-none absolute -left-24 top-4 h-56 w-56 rounded-full bg-[var(--color-primary-soft)]/60 blur-3xl" />

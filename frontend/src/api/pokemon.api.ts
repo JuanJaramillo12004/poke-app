@@ -9,6 +9,7 @@ import type {
   UpdateFavoritePokemonDto,
 } from "../types/pokemon.types";
 
+// API functions: interact with the backend Pokemon endpoints, handling data transformation and error management as needed.
 export async function getCatalogPokemons(
   params?: CatalogPokemonQueryParams,
 ): Promise<CatalogPokemonListResponse> {
@@ -21,6 +22,7 @@ export async function getCatalogPokemons(
   return response.data;
 }
 
+// API function: retrieves a single favorite Pokemon by its ID.
 export async function getFavoritePokemons(
   params?: FavoritePokemonQueryParams,
 ): Promise<FavoritePokemonListResponse> {
@@ -30,6 +32,7 @@ export async function getFavoritePokemons(
   return response.data;
 }
 
+// API function: retrieves a single favorite Pokemon by its ID.
 export async function getFavoritePokemonById(
   id: number,
 ): Promise<FavoritePokemon> {
@@ -37,6 +40,7 @@ export async function getFavoritePokemonById(
   return response.data;
 }
 
+// API function: creates a new favorite Pokemon for the authenticated user.
 export async function createFavoritePokemon(
   payload: CreateFavoritePokemonDto,
 ): Promise<FavoritePokemon> {
@@ -44,6 +48,7 @@ export async function createFavoritePokemon(
   return response.data;
 }
 
+// API function: updates an existing favorite Pokemon by its ID with the provided data.
 export async function updateFavoritePokemon(
   id: number,
   payload: UpdateFavoritePokemonDto,
@@ -52,6 +57,7 @@ export async function updateFavoritePokemon(
   return response.data;
 }
 
+// API function: deletes a favorite Pokemon by its ID and returns the deleted resource.
 export async function deleteFavoritePokemon(
   id: number,
 ): Promise<FavoritePokemon> {

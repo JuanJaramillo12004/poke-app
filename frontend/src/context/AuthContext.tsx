@@ -14,12 +14,14 @@ import type {
   AuthProviderProps,
 } from "../types/auth-context.types";
 
+// Provider component: manages authentication state, token persistence, and auth actions.
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthContextValue["user"]>(null);
   const [token, setToken] = useState<string | null>(getStoredToken());
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+// Bootstraps user session from the stored token on app startup.
     async function bootstrapAuth() {
       const existingToken = getStoredToken();
 
@@ -28,6 +30,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
 
+      // Surface request failures to the user with clear feedback.
       try {
         const profile = await getProfile();
         setUser(profile);
@@ -46,6 +49,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = useCallback(async (payload: LoginDto) => {
+    // Surface request failures to the user with clear feedback.
     try {
       const response = await loginRequest(payload);
       setStoredToken(response.access_token);
@@ -60,8 +64,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
+  // Registers a new user and logs them in, with error handling and feedback.
   const register = useCallback(
     async (payload: RegisterDto) => {
+      // Surface request failures to the user with clear feedback.
       try {
         await registerRequest(payload);
         toast.success("Cuenta creada correctamente");
@@ -75,6 +81,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     [login],
   );
 
+  // Clears authentication state and stored token, effectively logging the user out.
   const logout = useCallback(() => {
     clearStoredToken();
     setToken(null);
@@ -82,6 +89,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     toast.success("Sesion cerrada");
   }, []);
 
+  // Memoizes the context value to optimize performance and prevent unnecessary re-renders.
   const value = useMemo<AuthContextValue>(
     () => ({
       user,

@@ -8,6 +8,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '../users/users.module';
 
 @Module({
+  // Imports: integrates user management, JWT handling, and authentication strategies.
   imports: [
     UsersModule,
     PassportModule,
@@ -36,8 +37,10 @@ import { UsersModule } from '../users/users.module';
       },
     }),
   ],
+  // Controllers and providers: sets up the authentication controller, service, and JWT strategy for handling authentication logic and endpoints.
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
   exports: [AuthService],
 })
+// Module: configures authentication controllers, services, and JWT strategy.
 export class AuthModule {}

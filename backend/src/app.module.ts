@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { PokemonModule } from './pokemon/pokemon.module';
 
 @Module({
+  // Imports: sets up global configuration and integrates feature modules for authentication, user management, database access, and Pokemon-related functionality.
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -17,6 +18,7 @@ import { PokemonModule } from './pokemon/pokemon.module';
     PrismaModule,
     PokemonModule,
   ],
+  // Controllers and providers: registers the AppController for handling root HTTP requests and the AppService for providing application-wide business logic.
   controllers: [AppController],
   providers: [AppService],
 })
