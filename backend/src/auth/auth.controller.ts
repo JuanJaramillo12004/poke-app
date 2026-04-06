@@ -8,20 +8,11 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-
-type RequestWithUser = Request & {
-  user: {
-    id: number;
-    email: string;
-    createdAt: Date;
-    updatedAt: Date;
-  };
-};
+import type { RequestWithUser } from './types/auth.types';
 
 @Controller('auth')
 export class AuthController {

@@ -1,11 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-
-type CreateUserInput = {
-  email: string;
-  password: string;
-};
+import { CreateUserInput } from './types/users.types';
 
 @Injectable()
 export class UsersService {

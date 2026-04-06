@@ -4,7 +4,7 @@ const VALIDATE_PASSWORD =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 export class RegisterDto {
-  @IsEmail()
+  @IsEmail({}, { message: 'El correo electrónico no es válido' })
   email!: string;
 
   @IsString()
