@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { getApiErrorMessage } from "../api/axios";
 import { useAuth } from "../context/useAuth";
 import type { RegisterDto } from "../types/auth.types";
 
@@ -12,7 +11,6 @@ export function RegisterPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setError,
   } = useForm<RegisterDto>({
     defaultValues: {
       email: "",
@@ -28,11 +26,8 @@ export function RegisterPage() {
     try {
       await registerUser(values);
       navigate("/");
-    } catch (error: unknown) {
-      setError("root", {
-        type: "server",
-        message: getApiErrorMessage(error),
-      });
+    } catch {
+      // Los mensajes de error se muestran globalmente con sonner.
     }
   });
 
@@ -72,10 +67,6 @@ export function RegisterPage() {
               <small className="error">{errors.password.message}</small>
             )}
           </label>
-
-          {errors.root && (
-            <small className="error">{errors.root.message}</small>
-          )}
 
           <button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Registrando..." : "Crear cuenta"}

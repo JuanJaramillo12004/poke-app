@@ -7,7 +7,10 @@ export function ProtectedRoute() {
   if (isLoading) {
     return (
       <div className="page">
-        <p>Cargando sesion...</p>
+        <section className="card">
+          <h1>Validando sesión</h1>
+          <p className="muted">Espera un momento...</p>
+        </section>
       </div>
     );
   }

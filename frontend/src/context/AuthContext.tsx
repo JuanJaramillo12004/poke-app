@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { clearStoredToken, getStoredToken, setStoredToken } from "../api/axios";
+import { getApiErrorMessage } from "../api/axios";
 import {
   getProfile,
   login as loginRequest,
@@ -30,10 +32,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const profile = await getProfile();
         setUser(profile);
         setToken(existingToken);
-      } catch {
+      } catch (error: unknown) {
         clearStoredToken();
         setToken(null);
         setUser(null);
+        toast.error(getApiErrorMessage(error));
       } finally {
         setIsLoading(false);
       }
@@ -43,17 +46,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = useCallback(async (payload: LoginDto) => {
-    const response = await loginRequest(payload);
-    setStoredToken(response.access_token);
-    setToken(response.access_token);
+    try {
+      const response = await loginRequest(payload);
+      setStoredToken(response.access_token);
+      setToken(response.access_token);
 
-    const profile = await getProfile();
-    setUser(profile);
+      const profile = await getProfile();
+      setUser(profile);
+      toast.success("Sesion iniciada correctamente");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error));
+      throw error;
+    }
   }, []);
 
   const register = useCallback(
     async (payload: RegisterDto) => {
-      await registerRequest(payload);
+      try {
+        await registerRequest(payload);
+        toast.success("Cuenta creada correctamente");
+      } catch (error: unknown) {
+        toast.error(getApiErrorMessage(error));
+        throw error;
+      }
+
       await login(payload);
     },
     [login],
@@ -63,6 +79,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     clearStoredToken();
     setToken(null);
     setUser(null);
+    toast.success("Sesion cerrada");
   }, []);
 
   const value = useMemo<AuthContextValue>(
